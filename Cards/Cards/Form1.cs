@@ -113,7 +113,7 @@ namespace Cards
                 {
                     index++;
                 }
-                if (!isValid || !areNumbersGood(this.expressionTextBox.Text))
+                if (!isValid || !this.areNumbersGood(this.expressionTextBox.Text))
                 {
                     this.expressionTextBox.BackColor = Color.Red;
                     this.verifyAnswerButton.Hide();
@@ -123,6 +123,7 @@ namespace Cards
                 this.expressionTextBox.BackColor = Color.White;
                 this.verifyAnswerButton.Show();
             }
+
         }
 
         /// <summary>
@@ -160,11 +161,52 @@ namespace Cards
                     }//else, doNothing();
                     if (IsNumber(expression[index]) && IsNumber(expression[index - One]) && !IsNumber(expression[index + One]))
                     {
-                        if (IsNumberInRange(expression[index - One]) <= One && IsNumberInRange(expression[index]) <= 3)
+                        if (!(IsNumberInRange(expression[index - One]) <= One && IsNumberInRange(expression[index]) <= 3))
                         {
-
+                            return false;
                         }
-                    }//else, doNothing();
+
+                        var cardCheck = 0;
+                        var number = (int.Parse(expression[index - One].ToString()) * 10) + int.Parse(expression[index].ToString());
+                        foreach (var card in this.currentCards)
+                        {
+                            if (card.Value != number && cardCheck == 3)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (IsNumber(expression[index]))
+                        {
+                            var cardCheck = 0;
+                            var number = int.Parse(expression[index].ToString());
+                            foreach (var card in this.currentCards)
+                            {
+                                if (card.Value != number && cardCheck == 3)
+                                {
+                                    return false;
+                                }//else,DoNothing();
+
+                                cardCheck++;
+                            }
+                        }
+                        else
+                        {
+                            var cardCheck = 0;
+                            var number = int.Parse(expression[index - One].ToString());
+                            foreach (var card in this.currentCards)
+                            {
+                                if (card.Value != number && cardCheck == 3)
+                                {
+                                    return false;
+                                }//else,DoNothing();
+
+                                cardCheck++;
+                            }
+                        }
+                    }
 
                 }//else, doNothing();
 
@@ -209,6 +251,8 @@ namespace Cards
                         //something is wrong doNothing();
                         break;
                 }
+
+                cardValue++;
             }
         }
 
@@ -239,19 +283,16 @@ namespace Cards
                     && !this.usedCards.Contains(this.Deck[cardChosen]))
                 {
                     this.currentCards.Push(this.Deck[cardChosen]);
+                    this.usedCards.Push(this.Deck[cardChosen]);
                 }
             }
 
             this.numberOfShuffles++;
-
-            this.cardOnePictureBox.Image = this.currentCards.Peek().CardFace;
-            this.usedCards.Push(this.currentCards.Pop());
-            this.cardTwoPictureBox.Image = this.currentCards.Peek().CardFace;
-            this.usedCards.Push(this.currentCards.Pop());
-            this.cardThreePictureBox.Image = this.currentCards.Peek().CardFace;
-            this.usedCards.Push(this.currentCards.Pop());
-            this.cardFourPictureBox.Image = this.currentCards.Peek().CardFace;
-            this.usedCards.Push(this.currentCards.Pop());
+            var tempCurrentCards = this.currentCards.ToArray();
+            this.cardOnePictureBox.Image = tempCurrentCards[0].CardFace;
+            this.cardTwoPictureBox.Image = tempCurrentCards[1].CardFace;
+            this.cardThreePictureBox.Image = tempCurrentCards[2].CardFace;
+            this.cardFourPictureBox.Image = tempCurrentCards[3].CardFace;
         }
 
         /// <summary>
@@ -268,6 +309,11 @@ namespace Cards
             var operatorStack = new Stack<char>();
 
             var numberStack = new Stack<int>();
+
+            for (int index = 0; index < this.expressionTextBox.Text.Length; index++)
+            {
+                
+            }
         }
     }
 }
