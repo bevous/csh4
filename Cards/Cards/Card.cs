@@ -1,20 +1,39 @@
-﻿namespace Cards
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Card.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The card.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Cards
 {
     using System.Drawing;
 
-    class Card
+    /// <summary>
+    /// The card.
+    /// </summary>
+    internal class Card
     {
-        private int value;
-        
+        /// <summary>
+        /// The suit.
+        /// </summary>
         private string suit;
-        
-        public int Value
-        {
-            get => this.value;
 
-            set => this.value = (value > 0) ? value : int.MaxValue;
-        }
+        /// <summary>
+        /// The value.
+        /// </summary>
+        private int value;
 
+        /// <summary>
+        /// Gets or sets the card face.
+        /// </summary>
+        public Bitmap CardFace { get; set; }
+
+        /// <summary>
+        /// Gets or sets the suit.
+        /// </summary>
         public string Suit
         {
             get => this.suit;
@@ -22,7 +41,14 @@
             set => this.suit = value ?? string.Empty;
         }
 
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        public int Value
+        {
+            get => this.value;
 
-        public Bitmap CardFace { get; set; }
+            set => this.value = value > 0 ? value : int.MaxValue;
+        }
     }
 }
