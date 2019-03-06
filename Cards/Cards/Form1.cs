@@ -102,119 +102,123 @@ namespace Cards
         /// </param>
         private void expressionTextBox_TextChanged(object sender, EventArgs e)
         {
-            var validCharacters = "0123456789+-*/()";
-            validCharacters.ToCharArray();
-            string temp = string.Empty;
-            var isValid = false;
-            foreach (var character in this.expressionTextBox.Text)
+            bool areNumbersGood(string expression)
             {
-                var index = 0;
-                while (index < validCharacters.Length && !(isValid = character == validCharacters[index]))
+
+                bool IsNumber(char character)
                 {
-                    index++;
+                    return int.TryParse(character.ToString(), out int number);
                 }
-                if (!isValid || !this.areNumbersGood(this.expressionTextBox.Text))
+
+                bool IsNumberInRange(int number)
                 {
-                    this.expressionTextBox.BackColor = Color.Red;
-                    this.verifyAnswerButton.Hide();
-                    return;
-                }
-                
-                this.expressionTextBox.BackColor = Color.White;
-                this.verifyAnswerButton.Show();
-            }
-
-        }
-
-        /// <summary>
-        /// checks that there are no numbers larger than 2 digits.
-        /// </summary>
-        /// <param name="expression">
-        /// The expression.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        private bool areNumbersGood(string expression)
-        {
-            
-            bool IsNumber(char character)
-            {
-                return int.TryParse(character.ToString(),out int number);
-            }
-
-            int IsNumberInRange(char character)
-            {
-                int.TryParse(character.ToString(), out var value);
-                return value;
-            }
-            
-            for (int index = 0; index < expression.Length; index++)
-            {
-                if ((index - One) >= 0 && (index + One) < expression.Length)
-                {
-                    if (IsNumber(expression[index - One]) &&
-                        IsNumber(expression[index + One]) &&
-                        IsNumber(expression[index]))
+                    foreach (var card in this.currentCards)
                     {
-                        return false;
-                    }//else, doNothing();
-                    if (IsNumber(expression[index]) && IsNumber(expression[index - One]) && !IsNumber(expression[index + One]))
-                    {
-                        if (!(IsNumberInRange(expression[index - One]) <= One && IsNumberInRange(expression[index]) <= 3))
+                        if (card.Value == number)
                         {
-                            return false;
+                            return true;
                         }
+                    }
 
-                        var cardCheck = 0;
-                        var number = (int.Parse(expression[index - One].ToString()) * 10) + int.Parse(expression[index].ToString());
-                        foreach (var card in this.currentCards)
+                    return false;
+                }
+
+                for (int index = 0; index < expression.Length; index++)
+                {
+                    if (IsNumber(expression[index]))
+                    {
+                        if ((index + One) < expression.Length && IsNumber(expression[index + One]))
                         {
-                            if (card.Value != number && cardCheck == 3)
+                            var number = (int.Parse(expression[index].ToString()) * 10) + int.Parse(expression[index + One].ToString());
+                            if (!IsNumberInRange(number))
                             {
                                 return false;
                             }
-                        }
-                    }
-                    else
-                    {
-                        if (IsNumber(expression[index]))
-                        {
-                            var cardCheck = 0;
-                            var number = int.Parse(expression[index].ToString());
-                            foreach (var card in this.currentCards)
-                            {
-                                if (card.Value != number && cardCheck == 3)
-                                {
-                                    return false;
-                                }//else,DoNothing();
 
-                                cardCheck++;
-                            }
+                            index++;
                         }
                         else
                         {
-                            var cardCheck = 0;
-                            var number = int.Parse(expression[index - One].ToString());
-                            foreach (var card in this.currentCards)
+                            var number = int.Parse(expression[index].ToString());
+                            if (!IsNumberInRange(number))
                             {
-                                if (card.Value != number && cardCheck == 3)
-                                {
-                                    return false;
-                                }//else,DoNothing();
-
-                                cardCheck++;
+                                return false;
                             }
+
+                            index++;
                         }
                     }
+                }
 
-                }//else, doNothing();
-
+                return true;
             }
 
-            return true;
-        }
+            bool areCharactersValid()
+            {
+                var validCharacters = "0123456789+-*/()";
+                validCharacters.ToCharArray();
+                string temp = string.Empty;
+                var isValid = false;
+                foreach (var character in this.expressionTextBox.Text)
+                {
+                    var index = 0;
+                    while (index < validCharacters.Length && !(isValid = character == validCharacters[index]))
+                    {
+                        index++;
+                    }
+                }
 
+                return isValid;
+            }
+
+            bool areOperatorsGood()
+            {
+                var operators = "+-*/";
+                var expression = this.expressionTextBox.Text;
+
+                bool isOperator(char character)
+                {
+                    for (var operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+                    {
+                        if (character == operators[operatorIndex])
+                        {
+                            return true;
+                        }
+                    }
+                
+                    return false;
+                }
+
+                for (int index = 0; index < expression.Length; index++)
+                {
+                    if (isOperator(expression[index]))
+                    {
+                        if ((index + One) < expression.Length && isOperator(expression[index + One]))
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            //bool areWrapsClosed()
+            //{
+
+            //}
+            
+            if (!areCharactersValid() || !areNumbersGood(this.expressionTextBox.Text) || !areOperatorsGood())
+            {
+                this.expressionTextBox.BackColor = Color.Red;
+                this.verifyAnswerButton.Hide();
+                return;
+            }
+
+            this.expressionTextBox.BackColor = Color.White;
+            this.verifyAnswerButton.Show();
+        }
+        
         /// <summary>
         /// The make deck.
         /// </summary>
