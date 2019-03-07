@@ -11,6 +11,7 @@ namespace Cards
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Drawing;
     using System.Drawing.Text;
     using System.Windows.Forms;
@@ -123,18 +124,30 @@ namespace Cards
                     return false;
                 }
 
+                List<int> usedInts = new List<int>();
+
                 for (int index = 0; index < expression.Length; index++)
                 {
                     if (IsNumber(expression[index]))
                     {
                         if ((index + One) < expression.Length && IsNumber(expression[index + One]))
                         {
+                            if ((index + One + One) < expression.Length && IsNumber(expression[index + One + One]))
+                            {
+                                return false;
+                            }
+
                             var number = (int.Parse(expression[index].ToString()) * 10) + int.Parse(expression[index + One].ToString());
                             if (!IsNumberInRange(number))
                             {
                                 return false;
                             }
 
+                            //if (usedInts.Contains(number))
+                            //{
+                            //    return false;
+                            //}
+                            //usedInts.Add(number);
                             index++;
                         }
                         else
@@ -145,6 +158,11 @@ namespace Cards
                                 return false;
                             }
 
+                            //if (usedInts.Contains(number))
+                            //{
+                            //    return false;
+                            //}
+                            //usedInts.Add(number);
                             index++;
                         }
                     }
@@ -165,6 +183,11 @@ namespace Cards
                     while (index < validCharacters.Length && !(isValid = character == validCharacters[index]))
                     {
                         index++;
+                    }
+
+                    if (!isValid)
+                    {
+                        return false;
                     }
                 }
 
@@ -215,7 +238,7 @@ namespace Cards
                     {
                         if (expression[index] == wraps[0])
                         {
-                            expression.Remove(index, 1);
+                            expression = expression.Remove(index, 1);
                             for (int charIndex = 0; charIndex < expression.Length; charIndex++)
                             {
                                 if (expression[charIndex] == wraps[1])
@@ -230,7 +253,7 @@ namespace Cards
                     }
                     newExpression = string.Empty;
                     return false;
-                }
+                } 
 
                 bool hasWraps(string expression)
                 {
@@ -252,7 +275,13 @@ namespace Cards
 
                 while (hasWraps(expressionText))
                 {
-                    if (!closed(expressionText, out expressionText))
+                    if (!closed(expressionText, out var newExpression))
+                    {
+                        return false;
+                    }
+
+                    expressionText = newExpression;
+                    if (!areNumbersGood(expressionText) || !areOperatorsGood())
                     {
                         return false;
                     }
@@ -260,6 +289,8 @@ namespace Cards
 
                 return true;
             }
+
+            this.changeColor();
 
             if (!areCharactersValid() || !areNumbersGood(this.expressionTextBox.Text) || !areOperatorsGood() || !areWrapsClosed())
             {
@@ -314,6 +345,18 @@ namespace Cards
         }
 
         /// <summary>
+        /// The change color.
+        /// </summary>
+        private void changeColor()
+        {
+            if (this.BackColor.Equals(Color.Red))
+            {
+                this.BackColor = Color.White;
+                this.resultsLabel.Text = string.Empty;
+            }
+        }
+
+        /// <summary>
         /// The shuffle button_ click event handler.
         /// </summary>
         /// <param name="sender">
@@ -324,6 +367,7 @@ namespace Cards
         /// </param>
         private void ShffleButton_Click(object sender, EventArgs e)
         {
+            this.changeColor();
             if (this.numberOfShuffles == 12)
             {
                 this.numberOfShuffles = 0;
@@ -363,14 +407,30 @@ namespace Cards
         /// </param>
         private void verifyAnswerButton_Click(object sender, EventArgs e)
         {
-            var operatorStack = new Stack<char>();
+            DataTable dataTable = new DataTable();
+            var expressionCompute = dataTable.Compute(this.expressionTextBox.Text, string.Empty);
 
-            var numberStack = new Stack<int>();
 
-            for (int index = 0; index < this.expressionTextBox.Text.Length; index++)
+
+            if ((int)expressionCompute == 24)
             {
-                
+                this.BackColor = Color.Green;
+                this.resultsLabel.Text = $"Correct : {expressionCompute:G}";
             }
+            else
+            {
+                this.BackColor = Color.Red;
+                this.resultsLabel.Text = $"Incorrect : {expressionCompute:G}";
+            }
+
+            //var operatorStack = new Stack<char>();
+
+            //var numberStack = new Stack<int>();
+
+            //for (int index = 0; index < this.expressionTextBox.Text.Length; index++)
+            //{
+
+            //}
         }
     }
 }
