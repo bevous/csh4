@@ -368,6 +368,7 @@ namespace Cards
         private void ShffleButton_Click(object sender, EventArgs e)
         {
             this.changeColor();
+            this.expressionTextBox.Text = string.Empty;
             if (this.numberOfShuffles == 12)
             {
                 this.numberOfShuffles = 0;
@@ -409,10 +410,8 @@ namespace Cards
         {
             DataTable dataTable = new DataTable();
             var expressionCompute = dataTable.Compute(this.expressionTextBox.Text, string.Empty);
-
-
-
-            if ((int)expressionCompute == 24)
+            
+            if (expressionCompute.Equals((double)24))
             {
                 this.BackColor = Color.Green;
                 this.resultsLabel.Text = $"Correct : {expressionCompute:G}";
@@ -422,15 +421,7 @@ namespace Cards
                 this.BackColor = Color.Red;
                 this.resultsLabel.Text = $"Incorrect : {expressionCompute:G}";
             }
-
-            //var operatorStack = new Stack<char>();
-
-            //var numberStack = new Stack<int>();
-
-            //for (int index = 0; index < this.expressionTextBox.Text.Length; index++)
-            //{
-
-            //}
+            
         }
     }
 }
