@@ -203,12 +203,65 @@ namespace Cards
                 return true;
             }
 
-            //bool areWrapsClosed()
-            //{
+            bool areWrapsClosed()
+            {
 
-            //}
-            
-            if (!areCharactersValid() || !areNumbersGood(this.expressionTextBox.Text) || !areOperatorsGood())
+                var wraps = "()";
+                var expressionText = this.expressionTextBox.Text;
+
+                bool closed(string expression, out string newExpression)
+                {
+                    for (int index = 0; index < expression.Length; index++)
+                    {
+                        if (expression[index] == wraps[0])
+                        {
+                            expression.Remove(index, 1);
+                            for (int charIndex = 0; charIndex < expression.Length; charIndex++)
+                            {
+                                if (expression[charIndex] == wraps[1])
+                                {
+                                    newExpression = expression = expression.Remove(charIndex, 1);
+
+                                    return true;
+                                }
+                            }
+                        }
+                        
+                    }
+                    newExpression = string.Empty;
+                    return false;
+                }
+
+                bool hasWraps(string expression)
+                {
+                    for (int index = 0; index < expression.Length; index++)
+                    {
+                        if (expression[index] == wraps[0])
+                        {
+                            return true;
+                        }
+
+                        if (expression[index] == wraps[1])
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                while (hasWraps(expressionText))
+                {
+                    if (!closed(expressionText, out expressionText))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            if (!areCharactersValid() || !areNumbersGood(this.expressionTextBox.Text) || !areOperatorsGood() || !areWrapsClosed())
             {
                 this.expressionTextBox.BackColor = Color.Red;
                 this.verifyAnswerButton.Hide();
