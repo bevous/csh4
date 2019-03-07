@@ -128,9 +128,8 @@
             this.resultsLabel.AutoSize = true;
             this.resultsLabel.Location = new System.Drawing.Point(680, 20);
             this.resultsLabel.Name = "resultsLabel";
-            this.resultsLabel.Size = new System.Drawing.Size(51, 20);
+            this.resultsLabel.Size = new System.Drawing.Size(0, 20);
             this.resultsLabel.TabIndex = 11;
-            this.resultsLabel.Text = "label2";
             // 
             // cardsForm
             // 
