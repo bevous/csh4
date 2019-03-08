@@ -51,10 +51,41 @@ namespace Cards
         private const int NumberOfCards = 52;
 
         /// <summary>
+        /// The zero.
+        /// </summary>
+        private const int Zero = 0;
+
+        /// <summary>
         /// The number one.
         /// </summary>
         private const int One = 1;
-        
+
+        /// <summary>
+        /// The two.
+        /// </summary>
+        private const int Two = 2;
+
+        /// <summary>
+        /// The three.
+        /// </summary>
+        private const int Three = 3;
+
+        /// <summary>
+        /// The four.
+        /// </summary>
+        private const int Four = 4;
+
+        /// <summary>
+        /// The ten.
+        /// </summary>
+        private const int Ten = 10;
+
+        /// <summary>
+        /// The goal.
+        /// </summary>
+        private const int Goal = 24;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="cardsForm"/> class.
         /// </summary>
@@ -137,7 +168,7 @@ namespace Cards
                                 return false;
                             }
 
-                            var number = (int.Parse(expression[index].ToString()) * 10) + int.Parse(expression[index + One].ToString());
+                            var number = (int.Parse(expression[index].ToString()) * Ten) + int.Parse(expression[index + One].ToString());
                             if (!IsNumberInRange(number))
                             {
                                 return false;
@@ -179,7 +210,7 @@ namespace Cards
                 var isValid = false;
                 foreach (var character in this.expressionTextBox.Text)
                 {
-                    var index = 0;
+                    var index = Zero;
                     while (index < validCharacters.Length && !(isValid = character == validCharacters[index]))
                     {
                         index++;
@@ -201,7 +232,7 @@ namespace Cards
 
                 bool isOperator(char character)
                 {
-                    for (var operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+                    for (var operatorIndex = Zero; operatorIndex < operators.Length; operatorIndex++)
                     {
                         if (character == operators[operatorIndex])
                         {
@@ -212,7 +243,7 @@ namespace Cards
                     return false;
                 }
 
-                for (int index = 0; index < expression.Length; index++)
+                for (int index = Zero; index < expression.Length; index++)
                 {
                     if (isOperator(expression[index]))
                     {
@@ -234,16 +265,16 @@ namespace Cards
 
                 bool closed(string expression, out string newExpression)
                 {
-                    for (int index = 0; index < expression.Length; index++)
+                    for (int index = Zero; index < expression.Length; index++)
                     {
-                        if (expression[index] == wraps[0])
+                        if (expression[index] == wraps[Zero])
                         {
-                            expression = expression.Remove(index, 1);
-                            for (int charIndex = 0; charIndex < expression.Length; charIndex++)
+                            expression = expression.Remove(index, One);
+                            for (int charIndex = Zero; charIndex < expression.Length; charIndex++)
                             {
-                                if (expression[charIndex] == wraps[1])
+                                if (expression[charIndex] == wraps[One])
                                 {
-                                    newExpression = expression = expression.Remove(charIndex, 1);
+                                    newExpression = expression = expression.Remove(charIndex, One);
 
                                     return true;
                                 }
@@ -257,14 +288,14 @@ namespace Cards
 
                 bool hasWraps(string expression)
                 {
-                    for (int index = 0; index < expression.Length; index++)
+                    for (int index = Zero; index < expression.Length; index++)
                     {
-                        if (expression[index] == wraps[0])
+                        if (expression[index] == wraps[Zero])
                         {
                             return true;
                         }
 
-                        if (expression[index] == wraps[1])
+                        if (expression[index] == wraps[One])
                         {
                             return true;
                         }
@@ -323,16 +354,16 @@ namespace Cards
                 switch (suitType)
                 {
                     // else, DoNothing();
-                    case 1:
+                    case One:
                         this.Deck.Add(new Card { Value = cardValue, Suit = "Spade", CardFace = image });
                         break;
-                    case 2:
+                    case Two:
                         this.Deck.Add(new Card { Value = cardValue, Suit = "Heart", CardFace = image });
                         break;
-                    case 3:
+                    case Three:
                         this.Deck.Add(new Card { Value = cardValue, Suit = "Diamond", CardFace = image });
                         break;
-                    case 4:
+                    case Four:
                         this.Deck.Add(new Card { Value = cardValue, Suit = "Club", CardFace = image });
                         break;
                     default:
@@ -371,16 +402,16 @@ namespace Cards
             this.expressionTextBox.Text = string.Empty;
             if (this.numberOfShuffles == 12)
             {
-                this.numberOfShuffles = 0;
+                this.numberOfShuffles = Zero;
                 this.currentCards.Clear();
                 this.usedCards.Clear();
             }
 
             var numberRandom = new Random();
             this.currentCards.Clear();
-            while (this.currentCards.Count < 4)
+            while (this.currentCards.Count < Four)
             {
-                var cardChosen = numberRandom.Next(0, 51);
+                var cardChosen = numberRandom.Next(Zero, NumberOfCards - One);
                 if (!this.currentCards.Contains(this.Deck[cardChosen])
                     && !this.usedCards.Contains(this.Deck[cardChosen]))
                 {
@@ -391,10 +422,10 @@ namespace Cards
 
             this.numberOfShuffles++;
             var tempCurrentCards = this.currentCards.ToArray();
-            this.cardOnePictureBox.Image = tempCurrentCards[0].CardFace;
-            this.cardTwoPictureBox.Image = tempCurrentCards[1].CardFace;
-            this.cardThreePictureBox.Image = tempCurrentCards[2].CardFace;
-            this.cardFourPictureBox.Image = tempCurrentCards[3].CardFace;
+            this.cardOnePictureBox.Image = tempCurrentCards[Zero].CardFace;
+            this.cardTwoPictureBox.Image = tempCurrentCards[One].CardFace;
+            this.cardThreePictureBox.Image = tempCurrentCards[Two].CardFace;
+            this.cardFourPictureBox.Image = tempCurrentCards[Three].CardFace;
         }
 
         /// <summary>
@@ -438,18 +469,19 @@ namespace Cards
 
                     List<int> usedInts = new List<int>();
 
-                    for (int index = expression.Length - 1; index >= 0; index--)
+                    for (int index = expression.Length - One; index >= Zero; index--)
                     {
                         if (IsNumber(expression[index]))
                         {
-                            if ((index + One) < expression.Length && IsNumber(expression[index + One]))
+                            if ((index - One) < expression.Length && IsNumber(expression[index - One]))
                             {
-                                var number = (int.Parse(expression[index].ToString()) * 10) + int.Parse(expression[index + One].ToString());
+                                var number = (int.Parse(expression[index - One].ToString()) * Ten)
+                                             + int.Parse(expression[index].ToString());
                                 if (IsNumberInRange(number))
                                 {
                                     numbers.Push(number);
                                 }
-                                index++;
+                                index--;
                             }
                             else
                             {
@@ -459,7 +491,7 @@ namespace Cards
                                     numbers.Push(number);
                                 }
 
-                                index++;
+                                index--;
                             }
                         }
                     }
@@ -474,7 +506,7 @@ namespace Cards
                     bool isOperator(char character)
                     {
                         var operators = "+-*/()";
-                        for (var operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+                        for (var operatorIndex = Zero; operatorIndex < operators.Length; operatorIndex++)
                         {
                             if (character == operators[operatorIndex])
                             {
@@ -485,7 +517,7 @@ namespace Cards
                         return false;
                     }
 
-                    for (int index = expression.Length - 1; index >= 0; index--)
+                    for (int index = expression.Length - One; index >= Zero; index--)
                     {
                         if (isOperator(expression[index]))
                         {
@@ -514,26 +546,29 @@ namespace Cards
                 }
 
                 var answer = 0.0;
-                while (operatorStack.Count > 0 && numberStack.Count > 0)
+                while (operatorStack.Count > Zero && numberStack.Count > Zero)
                 {
                     
                     if (operatorStack.Peek() == '(')
                     {
                         operatorStack.Pop();
-                        answer = numberStack.Pop();
+                        
                         while (operatorStack.Peek() != ')')
                         {
-                            if (operatorStack.Count > 0 && numberStack.Count > 0)
+                            
+                            if (operatorStack.Count > Zero && numberStack.Count > Zero)
                             {
                                 var wrappedAnswer = processOperations(numberStack.Pop(), numberStack.Pop(), operatorStack.Pop());
                                 numberStack.Push((int)wrappedAnswer);
-                                numberStack.Push((int)answer);
                             }
+                            
                         }
+
+                        operatorStack.Pop();
                     }
                     else
                     {
-                        if (operatorStack.Count > 0 && numberStack.Count > 0)
+                        if (operatorStack.Count > Zero && numberStack.Count > Zero)
                         {
                             answer = processOperations(numberStack.Pop(), numberStack.Pop(), operatorStack.Pop());
                             numberStack.Push((int)answer);
@@ -541,7 +576,7 @@ namespace Cards
                     }
                 }
 
-                return answer.Equals(24);
+                return answer.Equals(Goal);
             }
 
             if (verifyExpression())
