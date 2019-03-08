@@ -408,18 +408,151 @@ namespace Cards
         /// </param>
         private void verifyAnswerButton_Click(object sender, EventArgs e)
         {
-            DataTable dataTable = new DataTable();
-            var expressionCompute = dataTable.Compute(this.expressionTextBox.Text, string.Empty);
-            
-            if (expressionCompute.Equals((double)24))
+
+            bool verifyExpression()
+            {
+               var expresion = this.expressionTextBox.Text;
+                Stack<int> numberStack = new Stack<int>();
+                Stack<char> operatorStack=new Stack<char>();
+
+                Stack<int> GetInts(string expression)
+                {
+                    Stack<int> numbers = new Stack<int>();
+                    bool IsNumber(char character)
+                    {
+                        return int.TryParse(character.ToString(), out int number);
+                    }
+
+                    bool IsNumberInRange(int number)
+                    {
+                        foreach (var card in this.currentCards)
+                        {
+                            if (card.Value == number)
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    List<int> usedInts = new List<int>();
+
+                    for (int index = expression.Length - 1; index >= 0; index--)
+                    {
+                        if (IsNumber(expression[index]))
+                        {
+                            if ((index + One) < expression.Length && IsNumber(expression[index + One]))
+                            {
+                                var number = (int.Parse(expression[index].ToString()) * 10) + int.Parse(expression[index + One].ToString());
+                                if (IsNumberInRange(number))
+                                {
+                                    numbers.Push(number);
+                                }
+                                index++;
+                            }
+                            else
+                            {
+                                var number = int.Parse(expression[index].ToString());
+                                if (IsNumberInRange(number))
+                                {
+                                    numbers.Push(number);
+                                }
+
+                                index++;
+                            }
+                        }
+                    }
+
+                    return numbers;
+                }
+
+                Stack<char> GetOperators(string expression)
+                {
+                    Stack<char> grabedOperators =new Stack<char>();
+                    
+                    bool isOperator(char character)
+                    {
+                        var operators = "+-*/()";
+                        for (var operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+                        {
+                            if (character == operators[operatorIndex])
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    for (int index = expression.Length - 1; index >= 0; index--)
+                    {
+                        if (isOperator(expression[index]))
+                        {
+                            grabedOperators.Push(expression[index]);
+                        }
+                    }
+
+                    return grabedOperators;
+                }
+
+                numberStack = GetInts(expresion);
+                operatorStack = GetOperators(expresion);
+
+                double processOperations(double left, int right, char currentOperator)
+                {
+                    
+                    switch (currentOperator)
+                    {
+                        case '+': return left + (double)right;
+                        case '-': return left - (double)right;
+                        case '*': return left * (double)right;
+                        case '/': return left / (double)right;
+                    }
+
+                    return double.MaxValue;
+                }
+
+                var answer = 0.0;
+                while (operatorStack.Count > 0 && numberStack.Count > 0)
+                {
+                    
+                    if (operatorStack.Peek() == '(')
+                    {
+                        operatorStack.Pop();
+                        answer = numberStack.Pop();
+                        while (operatorStack.Peek() != ')')
+                        {
+                            if (operatorStack.Count > 0 && numberStack.Count > 0)
+                            {
+                                var wrappedAnswer = processOperations(numberStack.Pop(), numberStack.Pop(), operatorStack.Pop());
+                                numberStack.Push((int)wrappedAnswer);
+                                numberStack.Push((int)answer);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (operatorStack.Count > 0 && numberStack.Count > 0)
+                        {
+                            answer = processOperations(numberStack.Pop(), numberStack.Pop(), operatorStack.Pop());
+                            numberStack.Push((int)answer);
+                        }
+                    }
+                }
+
+                return answer.Equals(24);
+            }
+
+            if (verifyExpression())
             {
                 this.BackColor = Color.Green;
-                this.resultsLabel.Text = $"Correct : {expressionCompute:G}";
+                this.resultsLabel.Text = @"Correct";
             }
             else
             {
                 this.BackColor = Color.Red;
-                this.resultsLabel.Text = $"Incorrect : {expressionCompute:G}";
+                this.resultsLabel.Text = @"Incorrect";
             }
             
         }
